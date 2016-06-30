@@ -1,0 +1,14 @@
+[Unit]
+Description=uWSGI Application %i
+
+[Service]
+ExecStart=/usr/bin/uwsgi --ini {{ uwsgi.lookup.application_enabled }}/%I
+ExecReload=/bin/kill -HUP ${MAINPID}
+ExecStop=/bin/kill -INT ${MAINPID}
+Restart=always
+Type=notify
+NotifyAccess=all
+KillSignal=SIGQUIT
+
+[Install]
+WantedBy=multi-user.target

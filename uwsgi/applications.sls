@@ -12,6 +12,28 @@ include:
   - uwsgi.service
   - uwsgi.application_config
 
+{% if grains['os_family']=="Gentoo" and grains['init']=="systemd" %}
+
+{% for application, settings in uwsgi.applications.managed.items() %}
+{% set state = 'application_state_' ~ loop.index0 %}
+uwsgi-service-{{ application }}:
+{% if settings.enabled == True %}
+  service.running:
+    - enable: True
+{% elif settings.enabled == False %}
+  service.dead:
+    - enable: False
+{% endif %}
+    - name: {{ uwsgi.lookup.uwsgi_service }}@{{ application }}
+    - watch:
+      - file: {{ state }}
+    - require:
+      - file: {{ state }}
+
+{% endfor %}
+
+{% else %}
+
 {% if application_states|length() > 0 %}
 uwsgi_service_reload:
   service.{{ service_function }}:
@@ -24,4 +46,6 @@ uwsgi_service_reload:
     - require:
       {{ file_requisites(application_states) }}
       - service: uwsgi_service
+{% endif %}
+
 {% endif %}

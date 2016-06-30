@@ -22,6 +22,14 @@ uwsgi_service:
       - sls: uwsgi.install
     - watch:
       - pkg: uwsgi_install
+
+{% elif grains['os_family']=="Gentoo" and grains['init']=="systemd" %}
+
+uwsgi_service:
+  file.managed:
+    - name: /etc/systemd/system/uwsgi@.service
+    - source: salt://uwsgi/files/uwsgi@.service
+
 {% else %}
 #TODO other os
 {% endif%}
