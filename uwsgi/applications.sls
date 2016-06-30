@@ -15,7 +15,7 @@ include:
 {% if grains['os_family']=="Gentoo" and grains['init']=="systemd" %}
 
 {% for application, settings in uwsgi.applications.managed.items() %}
-{% set state = 'application_state_' ~ loop.index0 %}
+{% set conf = 'application_conf_' ~ loop.index0 %}
 uwsgi-service-{{ application }}:
 {% if settings.enabled == True %}
   service.running:
@@ -26,9 +26,9 @@ uwsgi-service-{{ application }}:
 {% endif %}
     - name: {{ uwsgi.lookup.uwsgi_service }}@{{ application }}
     - watch:
-      - file: {{ state }}
+      - file: {{ conf }}
     - require:
-      - file: {{ state }}
+      - file: {{ conf }}
 
 {% endfor %}
 

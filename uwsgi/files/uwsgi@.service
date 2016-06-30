@@ -9,6 +9,7 @@ Restart=always
 Type=notify
 NotifyAccess=all
 KillSignal=SIGQUIT
+WorkingDirectory=/run/uwsgi
 
 [Install]
 WantedBy=multi-user.target

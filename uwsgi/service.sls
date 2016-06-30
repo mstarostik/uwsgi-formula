@@ -29,6 +29,18 @@ uwsgi_service:
   file.managed:
     - name: /etc/systemd/system/uwsgi@.service
     - source: salt://uwsgi/files/uwsgi@.service
+    - template: jinja
+    - context:
+        uwsgi: {{ uwsgi|json() }}
+
+uwsgi_tmpdir_file:
+  file.managed:
+    - name: /etc/tmpfiles.d/uwsgi.conf
+    - contents: 'd /run/uwsgi 0750 root nginx -'
+  cmd.run:
+    - name: systemd-tmpfiles --create uwsgi.conf
+    - onchanges:
+      - file: uwsgi_tmpdir_file
 
 {% else %}
 #TODO other os
